@@ -6,8 +6,8 @@ import (
 
 // processQueue processes the queued events periodically, batching them into a single request.
 func (c *Client) processQueue() {
-	if (c.DebugMode) {
-	c.Logger.Printf("processQueue started")
+	if c.DebugMode {
+		c.Logger.Printf("processQueue started")
 	}
 	batch := make([]EventData, 0, 999)
 
@@ -19,13 +19,11 @@ func (c *Client) processQueue() {
 			}
 			c.handleEvent(&batch, event)
 		case <-c.quitChan:
-				c.flushBatch(&batch)
-				batch = make([]EventData, 0, 999)
+			c.flushBatch(&batch)
+			batch = make([]EventData, 0, 999)
 		case <-time.After(500 * time.Millisecond):
-			if c.Quit {
-				c.flushBatch(&batch)
-				batch = make([]EventData, 0, 999)
-			}
+			c.flushBatch(&batch)
+			batch = make([]EventData, 0, 999)
 		}
 	}
 }
@@ -61,8 +59,10 @@ func (c *Client) sendBatch(batch []EventData) {
 // flushBatch sends any remaining events in the batch before quitting.
 func (c *Client) flushBatch(batch *[]EventData) {
 	if len(*batch) > 0 {
-		if (c.DebugMode) { c.Logger.Printf("Flushing events: %v", *batch) }
+		if c.DebugMode {
+			c.Logger.Printf("Flushing events: %v", *batch)
+		}
 		c.sendBatch(*batch)
-		finishedFlushing = true;
+		finishedFlushing = true
 	}
 }
