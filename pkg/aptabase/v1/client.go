@@ -28,7 +28,7 @@ type Client struct {
 }
 
 // NewClient Initializes a new client and begins processing events automagically.
-func NewClient(apiKey, appVersion string, appBuildNumber uint64, debugMode bool, baseURL string) *Client {
+func NewClient(apiKey, appVersion string, appBuildNumber uint64, debugMode bool, baseURL string, logger *log.Logger) *Client {
 
 	client := &Client{
 		APIKey:         apiKey,
@@ -40,8 +40,12 @@ func NewClient(apiKey, appVersion string, appBuildNumber uint64, debugMode bool,
 		DebugMode:      debugMode,
 		quitChan:       make(chan struct{}),
 		Quit:           false,
-		Logger:         log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile),
+		Logger:         logger,
 		batch:          make([]EventData, 0, 999),
+	}
+
+	if logger == nil {
+		client.Logger = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 	}
 
 	client.BaseURL = client.determineHost(apiKey)
